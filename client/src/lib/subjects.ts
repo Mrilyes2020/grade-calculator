@@ -71,13 +71,13 @@ export const totalCoefficients = subjects.reduce((sum, s) => sum + s.coefficient
 export function calculateSubjectAverage(
   td: number | null,
   exam: number | null,
-  tp?: number | null,
+  tp?: number | null | undefined,
   hasTp?: boolean
 ): number | null {
   if (td === null || exam === null) return null;
-  if (hasTp && tp === null) return null;
+  if (hasTp && (tp === null || tp === undefined)) return null;
 
-  if (hasTp && tp !== null) {
+  if (hasTp && tp !== null && tp !== undefined) {
     return td * 0.2 + tp * 0.2 + exam * 0.6;
   }
   return td * 0.4 + exam * 0.6;

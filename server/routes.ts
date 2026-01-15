@@ -49,10 +49,7 @@ export async function registerRoutes(
 
       if (existing) {
         // Update existing submission
-        const updated = await storage.updateGradeSubmission(sessionId, {
-          grades,
-          finalAverage,
-        });
+        const updated = await storage.updateGradeSubmission(sessionId, grades, finalAverage);
         return res.json(updated);
       } else {
         // Create new submission

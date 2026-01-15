@@ -2,6 +2,7 @@ import {
   gradeSubmissions, 
   type GradeSubmission, 
   type InsertGradeSubmission,
+  type GradesData,
   type User, 
   type InsertUser,
   users
@@ -14,10 +15,9 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
-  // Grade submission methods
   getGradeSubmissionBySessionId(sessionId: string): Promise<GradeSubmission | undefined>;
   createGradeSubmission(submission: InsertGradeSubmission): Promise<GradeSubmission>;
-  updateGradeSubmission(sessionId: string, submission: Partial<InsertGradeSubmission>): Promise<GradeSubmission | undefined>;
+  updateGradeSubmission(sessionId: string, grades: GradesData, finalAverage: number | null): Promise<GradeSubmission | undefined>;
   getAllGradeSubmissions(): Promise<GradeSubmission[]>;
 }
 
@@ -51,15 +51,23 @@ export class DatabaseStorage implements IStorage {
   async createGradeSubmission(submission: InsertGradeSubmission): Promise<GradeSubmission> {
     const [created] = await db
       .insert(gradeSubmissions)
-      .values(submission)
+      .values(submission as typeof gradeSubmissions.$inferInsert)
       .returning();
     return created;
   }
 
-  async updateGradeSubmission(sessionId: string, submission: Partial<InsertGradeSubmission>): Promise<GradeSubmission | undefined> {
+  async updateGradeSubmission(
+    sessionId: string, 
+    grades: GradesData, 
+    finalAverage: number | null
+  ): Promise<GradeSubmission | undefined> {
     const [updated] = await db
       .update(gradeSubmissions)
-      .set({ ...submission, updatedAt: new Date() })
+      .set({ 
+        grades, 
+        finalAverage, 
+        updatedAt: new Date() 
+      })
       .where(eq(gradeSubmissions.sessionId, sessionId))
       .returning();
     return updated || undefined;
