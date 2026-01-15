@@ -4,6 +4,7 @@ export interface Subject {
   nameAr: string;
   coefficient: number;
   hasTp: boolean;
+  examOnly: boolean;
   formula: string;
 }
 
@@ -14,6 +15,7 @@ export const subjects: Subject[] = [
     nameAr: "الاحتمالات",
     coefficient: 4,
     hasTp: false,
+    examOnly: false,
     formula: "(TD × 0.4) + (Exam × 0.6)",
   },
   {
@@ -22,39 +24,35 @@ export const subjects: Subject[] = [
     nameAr: "الإحصاء",
     coefficient: 4,
     hasTp: false,
+    examOnly: false,
     formula: "(TD × 0.4) + (Exam × 0.6)",
   },
   {
     id: "mna",
     name: "MNA",
-    nameAr: "التحليل العددي",
+    nameAr: "تحليل عددي",
     coefficient: 4,
     hasTp: true,
+    examOnly: false,
     formula: "(TD × 0.2) + (TP × 0.2) + (Exam × 0.6)",
+  },
+  {
+    id: "aed",
+    name: "AED",
+    nameAr: "خوارزميات/بنى معطيات",
+    coefficient: 3,
+    hasTp: false,
+    examOnly: false,
+    formula: "(TD × 0.4) + (Exam × 0.6)",
   },
   {
     id: "system",
     name: "System",
-    nameAr: "الأنظمة",
+    nameAr: "أنظمة",
     coefficient: 2,
     hasTp: false,
+    examOnly: false,
     formula: "(TD × 0.4) + (Exam × 0.6)",
-  },
-  {
-    id: "bd",
-    name: "Database",
-    nameAr: "قواعد البيانات",
-    coefficient: 4,
-    hasTp: true,
-    formula: "(TD × 0.2) + (TP × 0.2) + (Exam × 0.6)",
-  },
-  {
-    id: "reseaux",
-    name: "Networks",
-    nameAr: "الشبكات",
-    coefficient: 3,
-    hasTp: true,
-    formula: "(TD × 0.2) + (TP × 0.2) + (Exam × 0.6)",
   },
   {
     id: "anglais",
@@ -62,7 +60,8 @@ export const subjects: Subject[] = [
     nameAr: "الإنجليزية",
     coefficient: 1,
     hasTp: false,
-    formula: "(TD × 0.4) + (Exam × 0.6)",
+    examOnly: true,
+    formula: "Exam 100%",
   },
 ];
 
@@ -72,8 +71,13 @@ export function calculateSubjectAverage(
   td: number | null,
   exam: number | null,
   tp?: number | null | undefined,
-  hasTp?: boolean
+  hasTp?: boolean,
+  examOnly?: boolean
 ): number | null {
+  if (examOnly) {
+    return exam;
+  }
+  
   if (td === null || exam === null) return null;
   if (hasTp && (tp === null || tp === undefined)) return null;
 

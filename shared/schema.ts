@@ -13,14 +13,13 @@ export const subjectGradeSchema = z.object({
 
 export type SubjectGrade = z.infer<typeof subjectGradeSchema>;
 
-// All grades for a submission
+// All grades for a submission (6 subjects)
 export const gradesDataSchema = z.object({
   proba: subjectGradeSchema,
   stat: subjectGradeSchema,
   mna: subjectGradeSchema,
+  aed: subjectGradeSchema,
   system: subjectGradeSchema,
-  bd: subjectGradeSchema,
-  reseaux: subjectGradeSchema,
   anglais: subjectGradeSchema,
 });
 

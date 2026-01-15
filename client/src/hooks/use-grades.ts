@@ -25,9 +25,8 @@ function createEmptyGrades(): GradesData {
     proba: createEmptyGrade(),
     stat: createEmptyGrade(),
     mna: createEmptyGrade(),
+    aed: createEmptyGrade(),
     system: createEmptyGrade(),
-    bd: createEmptyGrade(),
-    reseaux: createEmptyGrade(),
     anglais: createEmptyGrade(),
   };
 }
@@ -38,7 +37,19 @@ export function useGrades() {
   const sessionId = getOrCreateSessionId();
   const [grades, setGrades] = useState<GradesData>(() => {
     const backup = localStorage.getItem(GRADES_BACKUP_KEY);
-    return backup ? JSON.parse(backup) : createEmptyGrades();
+    if (backup) {
+      try {
+        const parsed = JSON.parse(backup);
+        // Migrate old data format if needed
+        if (parsed.bd || parsed.reseaux) {
+          return createEmptyGrades();
+        }
+        return parsed;
+      } catch {
+        return createEmptyGrades();
+      }
+    }
+    return createEmptyGrades();
   });
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,8 +66,14 @@ export function useGrades() {
   // Load server grades on initial fetch
   useEffect(() => {
     if (serverGrades?.grades) {
-      setGrades(serverGrades.grades);
-      localStorage.setItem(GRADES_BACKUP_KEY, JSON.stringify(serverGrades.grades));
+      // Migrate old data format if needed
+      const serverData = serverGrades.grades;
+      if ((serverData as any).bd || (serverData as any).reseaux) {
+        // Old format, use empty grades
+        return;
+      }
+      setGrades(serverData);
+      localStorage.setItem(GRADES_BACKUP_KEY, JSON.stringify(serverData));
     }
   }, [serverGrades]);
 
@@ -89,7 +106,8 @@ export function useGrades() {
         g.td,
         g.exam,
         g.tp,
-        subject.hasTp
+        subject.hasTp,
+        subject.examOnly
       );
     }
     return {
@@ -136,7 +154,8 @@ export function useGrades() {
           updatedSubjectGrade.td,
           updatedSubjectGrade.exam,
           updatedSubjectGrade.tp,
-          subject.hasTp
+          subject.hasTp,
+          subject.examOnly
         );
 
         const newGrades = {

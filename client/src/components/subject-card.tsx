@@ -66,25 +66,27 @@ export function SubjectCard({
         </div>
       </CardHeader>
       <CardContent className="px-4 pb-4 pt-0">
-        <div className={`grid gap-3 ${subject.hasTp ? "grid-cols-3" : "grid-cols-2"}`}>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor={`${subject.id}-td`} className="text-xs font-medium text-muted-foreground">
-              TD
-            </Label>
-            <Input
-              id={`${subject.id}-td`}
-              type="number"
-              inputMode="decimal"
-              min="0"
-              max="20"
-              step="0.5"
-              placeholder="0-20"
-              value={grade.td ?? ""}
-              onChange={(e) => handleInputChange("td", e.target.value)}
-              className="h-12 text-center text-lg font-medium"
-              data-testid={`input-td-${subject.id}`}
-            />
-          </div>
+        <div className={`grid gap-3 ${subject.examOnly ? "grid-cols-1" : subject.hasTp ? "grid-cols-3" : "grid-cols-2"}`}>
+          {!subject.examOnly && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor={`${subject.id}-td`} className="text-xs font-medium text-muted-foreground">
+                TD
+              </Label>
+              <Input
+                id={`${subject.id}-td`}
+                type="number"
+                inputMode="decimal"
+                min="0"
+                max="20"
+                step="0.5"
+                placeholder="0-20"
+                value={grade.td ?? ""}
+                onChange={(e) => handleInputChange("td", e.target.value)}
+                className="h-12 text-center text-lg font-medium"
+                data-testid={`input-td-${subject.id}`}
+              />
+            </div>
+          )}
           {subject.hasTp && (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor={`${subject.id}-tp`} className="text-xs font-medium text-muted-foreground">
